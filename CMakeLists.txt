@@ -13,7 +13,7 @@ endif()
 
 # 仅在主要项目中构建示例,ON=开
 if(CMAKE_PROJECT_NAME STREQUAL "muduo")
-  option(MUDUO_BUILD_EXAMPLES "Build Muduo examples" ON) 
+  option(MUDUO_BUILD_EXAMPLES "Build Muduo examples" ON)
 endif()
 
 # 设置编译选项
@@ -56,7 +56,9 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG")
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
+# boost库，没有报错
 find_package(Boost REQUIRED)
+# Protobuf协议流
 find_package(Protobuf)
 find_package(CURL)
 find_package(ZLIB)
@@ -77,6 +79,49 @@ find_program(THRIFT_COMPILER thrift)
 find_path(THRIFT_INCLUDE_DIR thrift)
 find_library(THRIFT_LIBRARY NAMES thrift)
 
+if(CARES_INCLUDE_DIR AND CARES_LIBRARY)
+  message(STATUS "found cares")
+endif()
+if(CURL_FOUND)
+  message(STATUS "found curl")
+endif()
+if(PROTOBUF_FOUND)
+  message(STATUS "found protobuf")
+endif()
+if(TCMALLOC_INCLUDE_DIR AND TCMALLOC_LIBRARY)
+  message(STATUS "found tcmalloc")
+endif()
+if(ZLIB_FOUND)
+  message(STATUS "found zlib")
+endif()
+if(HIREDIS_INCLUDE_DIR AND HIREDIS_LIBRARY)
+  message(STATUS "found hiredis")
+endif()
+if(GD_INCLUDE_DIR AND GD_LIBRARY)
+  message(STATUS "found gd")
+endif()
+if(THRIFT_COMPILER AND THRIFT_INCLUDE_DIR AND THRIFT_LIBRARY)
+  message(STATUS "found thrift")
+endif()
 
+include_directories(${Boost_INCLUDE_DIRS})
+
+include_directories(${PROJECT_SOURCE_DIR})
+
+string(TOUPPER ${CMAKE_BUILD_TYPE} BUILD_TYPE)
+message(STATUS "CXX_FLAGS = " ${CMAKE_CXX_FLAGS} " " 
+${CMAKE_CXX_FLAGS_${BUILD_TYPE}})
+
+#add_subdirectory(muduo/base)
+#add_subdirectory(muduo/net)
+
+if(MUDUO_BUILD_EXAMPLES)
+  #add_subdirectory(contrib)
+  add_subdirectory(examples)
+else()
+  if(CARES_INCLUDE_DIR AND CARES_LIBRARY)
+    add_subdirectory(examples/cdns)
+  endif()
+endif()
 
 

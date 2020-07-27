@@ -5,7 +5,7 @@ set -x
 SOURCE_DIR=`pwd`
 BUILD_DIR=${BUILD_DIR:-../build}
 BUILD_TYPE=${BUILD_TYPE:-release}
-INSTALL_DIR={INSTALL_DIR:-../${BUILD_TYPE}-install-test}
+INSTALL_DIR=${INSTALL_DIR:-../${BUILD_TYPE}-install-test}
 CXX=${CXX:-g++}
 
 ln -sf $BUILD_DIR/$BUILD_TYPE-test/compile_commands.json
