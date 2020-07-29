@@ -24,7 +24,7 @@ public:
 		ERROR, // 运行发送错误
 		FATAL, // 程序运行发生严重错误导致程序退出
 		NUM_LOG_LEVELS, // 日志级别总数
-	}
+	};
 
 	// 源文件基本名称的编译时间计算
 	class SourceFile

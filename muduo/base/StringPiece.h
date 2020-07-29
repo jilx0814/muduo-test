@@ -82,13 +82,88 @@ public:
 	
 	char operator[](int i) const { return ptr_[i]; }
 	
-	void remove_prefix(int n) 
+	void remove_prefix(int n) // 删除字首
 	{
 		ptr_ += n;
 		length_ -= n;
 	}
+	
+	void remove_suffix(int n) // 删除后缀
+	{
+		length_ -= n;
+	}
+	
+	bool operator==(const StringPiece& x) const
+	{
+		return ((length_ == x.length_) &&
+				(memcmp(ptr_, x.ptr_, length_) == 0));
+	}
+	bool operator!=(const StringPiece& x) const
+	{
+		return !(*this == x);
+	}
+	
+#define STRINGPIECE_BINARY_PREDICATE(cmp,auxcmp)                             \
+  bool operator cmp (const StringPiece& x) const {                           \
+    int r = memcmp(ptr_, x.ptr_, length_ < x.length_ ? length_ : x.length_); \
+    return ((r auxcmp 0) || ((r == 0) && (length_ cmp x.length_)));          \
+  }
+  STRINGPIECE_BINARY_PREDICATE(<,  <);
+  STRINGPIECE_BINARY_PREDICATE(<=, <);
+  STRINGPIECE_BINARY_PREDICATE(>=, >);
+  STRINGPIECE_BINARY_PREDICATE(>,  >);
+#undef STRINGPIECE_BINARY_PREDICATE
+
+	int compare(const StringPiece& x) const
+	{
+		int r = memcmp(ptr_, x.ptr_, length_ < x.length_ ? length_ : x.length_);
+		if (r == 0)
+		{
+			if (length_ < x.length_) r = -1;
+			else if (length_ > x.length_) r = +1;
+		}
+		return r;
+	}
+	
+	string as_string() const
+	{
+		return string(data(), size());
+	}
+	
+	void CopyToString(string* target) const
+	{
+		target->assign(ptr_, length_);
+	}
+	
+	//“ this”是否以“ x”开头
+	bool starts_with(const StringPiece& x) const
+	{
+		return ((length_ >= x.length_) && (memcmp(ptr_, x.ptr_, x.length_) == 0));
+	}
 };
 
-} // muduo
+} // namespace muduo
+
+
+// ------------------------------------------------ ------------------
+//用于创建使用StringPiece的STL容器的函数
+//请记住，StringPiece的生命周期最好小于
+//基础字符串或char *的字符串。 如果不是，那你
+//无法将StringPiece安全地存储到STL容器中
+// ------------------------------------------------ ------------------
+
+#ifdef HAVE_TYPE_TRAITS
+// This makes vector<StringPiece> really fast for some STL implementations
+template<> struct __type_traits<muduo::StringPiece> {
+  typedef __true_type    has_trivial_default_constructor;
+  typedef __true_type    has_trivial_copy_constructor;
+  typedef __true_type    has_trivial_assignment_operator;
+  typedef __true_type    has_trivial_destructor;
+  typedef __true_type    is_POD_type;
+};
+#endif
+
+// allow StringPiece to be logged
+std::ostream& operator<<(std::ostream& o, const muduo::StringPiece& piece);
 
 #endif // MUDUO_BASE_STRINGPIECE_H
