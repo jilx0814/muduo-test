@@ -36,7 +36,7 @@ set(CXX_FLAGS
  # -MMD
  -std=c++11
  -rdynamic
-)
+ )
 
 if(CMAKE_BUILD_BITS EQUAL 32)
   list(APPEND CXX_FLAGS "-m32")
@@ -109,10 +109,9 @@ include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${PROJECT_SOURCE_DIR})
 
 string(TOUPPER ${CMAKE_BUILD_TYPE} BUILD_TYPE)
-message(STATUS "CXX_FLAGS = " ${CMAKE_CXX_FLAGS} " " 
-${CMAKE_CXX_FLAGS_${BUILD_TYPE}})
+message(STATUS "CXX_FLAGS = " ${CMAKE_CXX_FLAGS} " " ${CMAKE_CXX_FLAGS_${BUILD_TYPE}})
 
-#add_subdirectory(muduo/base)
+add_subdirectory(muduo/base)
 #add_subdirectory(muduo/net)
 
 if(MUDUO_BUILD_EXAMPLES)
